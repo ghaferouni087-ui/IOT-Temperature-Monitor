@@ -4,16 +4,16 @@ typedef struct {
     double seuil_min;
     double seuil_max;
     int intervalle_mesure; 
-    int window_size; 
-    int consecutive_needed; 
+    int file_size; 
+    int alertes_consecutives; 
 } Config;
 
 void config_init_default(Config *c) {
     c->seuil_min = 15.0;
     c->seuil_max = 30.0;
     c->intervalle_mesure = 5;
-    c->window_size = 10;
-    c->consecutive_needed = 3;
+    c->file_size = 10;
+    c->alertes_consecutives = 3;
 }
 
 typedef struct {
@@ -35,16 +35,16 @@ typedef struct {
 } File;
 
 
-int count_alertes_consecutive(File *q, int level) {
+int count_alertes_consecutive(File *q, int niveau) {
     if (!q->queue) return 0;
-    int cnt = 0;
-    Noeud *cur = q->tete;
-    while (cur) {
-        if (cur->a.niveau >= level) cnt++;
-        else cnt=0;
-        cur = cur->next;
+    int count = 0;
+    Noeud *l = q->tete;
+    while (l) {
+        if (l->a.niveau >= niveau) count++;
+        else count=0;
+        l = l->next;
     }
-    return cnt;
+    return count;
 }
 
 int determiner_niveau(double temp, Config *cfg) {
