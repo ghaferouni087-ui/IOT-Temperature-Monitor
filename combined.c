@@ -365,12 +365,14 @@ int calculer_duree_alerte_totale(Config *cfg) {
 void generer_rapport_quotidien(Config *cfg) {
     if (tete_journal == NULL)
     {
-        printf("aucune donnee disponible")
+        printf("aucune donnee disponible");
+        return;
     }
-    FILE *f= fopen("rapport_journaliertct","w");
+    FILE *f= fopen("rapport_journalier.txt","w");
     if (!f)
     {
         printf("erreur : impossibe de creer le fchier \n");
+        return;
     }
 
     float min = 9999;
