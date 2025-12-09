@@ -516,7 +516,6 @@ void monitoring_loop(Config *cfg,int looplength) {
                 printf("-> Alerte détectée mais non confirmée (%d/%d)\n", consec, cfg->alertes_consecutives);
             }
         }
-        ecrire_journal_dans_fichier();
         i++;
 #ifdef _WIN32 
         Sleep(cfg->intervalle_mesure * 1000); 
@@ -524,7 +523,7 @@ void monitoring_loop(Config *cfg,int looplength) {
         sleep(cfg->intervalle_mesure);
 #endif 
     }
-
+    ecrire_journal_dans_fichier();
     free(window);
 }
 
