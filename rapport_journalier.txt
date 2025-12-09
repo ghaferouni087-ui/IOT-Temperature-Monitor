@@ -1,0 +1,13 @@
+STATISTIQUES TEMPERTAURE
+nombre de mesure : 5
+minimum : 7.300000 
+maximum : 40.400002 
+moyenne : 24.880001 
+alertes detectees
+niveau 1 : 1
+niveau 2 : 2
+niveau 3 : 2
+total alertes : 5
+duree totale en etat d alerte
+15 minutes 
+rapport généré le : 2025-12-09 13:47:53
