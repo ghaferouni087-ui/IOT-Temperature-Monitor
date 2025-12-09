@@ -159,7 +159,7 @@ void copier_chaine_securisee(char *destination, const char *source, int taille_m
     }
     destination[i] = '\0';
 }
-void enfiler_mesure_journal(float temp,const char *msg) {
+void empiler_mesure_journal(float temp,const char *msg) {
     NoeudJournal *nouveau_noeud = (NoeudJournal *)malloc(sizeof(NoeudJournal));
     obtenir_timestamp(nouveau_noeud->timestamp);
     nouveau_noeud->temperature = temp;
@@ -185,7 +185,7 @@ void ecrire_journal_dans_fichier() {
 }
 
 
-void defiler_tout_journal() {
+void depiler_tout_journal() {
     NoeudJournal *courant = sommet_journal;
     NoeudJournal *suivant;
 
@@ -492,11 +492,11 @@ void monitoring_loop(Config *cfg,int looplength) {
         if (niveau == 0) printf("[%s] Temp = %.2f => Normal\n", ts, temp);
         else printf("[%s] Temp = %.2f => Niv%d\n", ts, temp, niveau);
 
-        if (niveau == 0) enfiler_mesure_journal(temp,"NORMAL");
+        if (niveau == 0) empiler_mesure_journal(temp,"NORMAL");
         else {
             char msg[64];
             snprintf(msg, sizeof(msg), "ALERTE_NIV_%d", niveau);
-            enfiler_mesure_journal(temp, msg);
+            empiler_mesure_journal(temp, msg);
         }
 
         /* file d'alertes */
@@ -581,7 +581,7 @@ int main() {
         } else if (choice == 5) {
             printf("Au revoir.\n");
             ecrire_journal_dans_fichier();
-            defiler_tout_journal();
+            depiler_tout_journal();
             break;
         } else {
             printf("Choix invalide.\n");
