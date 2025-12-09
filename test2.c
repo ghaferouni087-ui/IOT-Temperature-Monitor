@@ -503,8 +503,7 @@ void monitoring_loop(Config *cfg,int looplength) {
         Alerte a;
         a.niveau = niveau;
         a.temperature = temp;
-        strncpy(a.timestamp, ts, sizeof(a.timestamp) - 1);
-        a.timestamp[64-1]='\0';
+        snprintf(a.timestamp, sizeof(a.timestamp) - 1,ts);
         enfiler(window, a);
 
         /* validation par nombre d'alertes consécutives */
@@ -519,16 +518,13 @@ void monitoring_loop(Config *cfg,int looplength) {
         }
         ecrire_journal_dans_fichier();
         i++;
-
-
-#ifdef _WIN32
-        Sleep(cfg->intervalle_mesure * 1000);
-#else
+#ifdef _WIN32 
+        Sleep(cfg->intervalle_mesure * 1000); 
+#else 
         sleep(cfg->intervalle_mesure);
-#endif
+#endif 
     }
 
-    /* jamais atteint ici, mais si on sortait on libérerait les ressources : */
     free(window);
 }
 
@@ -536,7 +532,6 @@ void monitoring_loop(Config *cfg,int looplength) {
 
 /* --- Menu principal --- */
 int main() {
-    srand((unsigned)time(NULL));
     Config cfg;
     config_init_default(&cfg);
     if (lire_config(&cfg) == 0) {
@@ -548,10 +543,7 @@ int main() {
     while (1) {
         print_menu();
         int choice = 0;
-        if (scanf("%d", &choice) != 1) {
-            int c; while ((c = getchar()) != '\n' && c != EOF);
-            continue;
-        }
+        scanf("%d", &choice);
         if (choice == 1) {
             printf("La longueur de la simulation:");
             int looplength; scanf("%d",&looplength);
