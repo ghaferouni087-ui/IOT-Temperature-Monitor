@@ -491,7 +491,6 @@ void monitoring_loop(Config *cfg,int looplength) {
         if (niveau == 0) printf("[%s] Temp = %.2f => Normal\n", ts, temp);
         else printf("[%s] Temp = %.2f => Niv%d\n", ts, temp, niveau);
 
-        /* écrire dans journal persistant et mémoire */
         if (niveau == 0) ajouter_mesure_journal(temp,"NORMAL");
         else {
             char msg[64];
@@ -549,18 +548,19 @@ int main() {
             printf("Démarrage en mode simulation.\n");
             monitoring_loop(&cfg,looplength);
         } else if (choice == 2) {
-            char line[256];
+            float x;
             printf("Modifier configuration (taper Entrée après chaque valeur)\n");
             printf("seuil_min (actuel %.2f) : ", cfg.seuil_min);
-            if (scanf("%s", line) == 1) cfg.seuil_min = atof(line);
+            scanf("%f", &x); cfg.seuil_min = x;
             printf("seuil_max (actuel %.2f) : ", cfg.seuil_max);
-            if (scanf("%s", line) == 1) cfg.seuil_max = atof(line);
+            scanf("%f", &x); cfg.seuil_max = x;
             printf("intervalle_mesure en secondes (actuel %d) : ", cfg.intervalle_mesure);
-            if (scanf("%s", line) == 1) cfg.intervalle_mesure = atoi(line);
+            int y;
+            scanf("%d", &y); cfg.intervalle_mesure = y;
             printf("file_size (file) (actuel %d) : ", cfg.file_size);
-            if (scanf("%s", line) == 1) cfg.file_size = atoi(line);
+            scanf("%d", &y); cfg.file_size = y;
             printf("alertes_consecutives (actuel %d) : ", cfg.alertes_consecutives);
-            if (scanf("%s", line) == 1) cfg.alertes_consecutives = atoi(line);
+            scanf("%d", &y); cfg.alertes_consecutives = y;
 
             if (cfg.seuil_min >= cfg.seuil_max) {
                 printf("Attention: seuil_min >= seuil_max. Correction automatique.\n");
