@@ -199,21 +199,6 @@ void depiler_tout_journal() {
     
 }
 
-const char* comparaison(float temp,float seuil_min,float seuil_max){
-    if (temp>seuil_max){
-        printf("alerte:temperature tros elevee\n");
-        return ("alerte:niveau 1\n");
-    }
-    else if (temp<seuil_min){
-        printf("alerte:temperature tros basse\n");
-        return("alerte niveau 2\n");
-    }
-    else{
-        printf("temperature normale\n");
-        return ("niveau 0\n");
-    }
-}
-
 /*task 5*/
 void config_init_default(Config *c) {
     c->seuil_min = 15.0;
