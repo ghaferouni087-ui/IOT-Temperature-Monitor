@@ -1,5 +1,5 @@
-seuil_min=17.00
-seuil_max=32.00
-intervalle_mesure=5
-window_size=10
-consecutive_needed=3
+17.000000
+32.000000
+5
+10
+3
