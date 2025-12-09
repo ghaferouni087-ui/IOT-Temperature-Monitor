@@ -267,6 +267,7 @@ void gerer_les_alertes(int niveau) {
 }
 
 /*task 6*/
+NODE *racine = NULL;
 /*insertion de la temperature dans l arbre*/
 NODE* insert(NODE* root, float temp) {
     if (root == NULL) {
@@ -351,10 +352,6 @@ void computeStatistics(NODE* root) {
     else
         median = (arr[n/2 -1] + arr[n/2]) /2.0f;
     
-    printf("Min=%d\n", arr[0]);
-    printf("Max=%d\n", arr[n-1]);
-    printf("moyen=%f\n", average);
-    printf("Mediane=%f\n", median);
     free(arr);
 }
 
@@ -437,6 +434,8 @@ void generer_rapport_quotidien(Config *cfg) {
     compter_alertes_par_type(&n1,&n2,&n3,cfg);
     int duree_alerte = calculer_duree_alerte_totale(cfg);
 
+    computeStatistics(racine);
+
 /*rapport*/
 
     fprintf(f,"STATISTIQUES TEMPERTAURE\n");
@@ -457,7 +456,7 @@ void generer_rapport_quotidien(Config *cfg) {
     char ts[64];
     obtenir_timestamp(ts);
     fprintf(f,"rapport généré le : %s",ts);
-
+    printf("rapport_journalier.txt genere");
     fclose(f);
 }
 
@@ -473,7 +472,8 @@ void print_menu() {
 }
 
 /* --- Monitoring loop --- */
-void monitoring_loop(Config *cfg) {
+void monitoring_loop(Config *cfg,int looplength) {
+    int i= 0;
     printf("Lancement de la surveillance (Ctrl+C pour arrêter)...\n");
     File *window = creer_file();
     if (!window) {
@@ -481,10 +481,11 @@ void monitoring_loop(Config *cfg) {
         return;
     }
 
-    while (1) {
+    while (i<looplength) {
         char ts[64];
         obtenir_timestamp(ts);
         double temp = capteur();
+        racine = insert (racine, temp);
         int niveau = determiner_niveau(temp, cfg);
 
         if (niveau == 0) printf("[%s] Temp = %.2f => Normal\n", ts, temp);
@@ -516,8 +517,10 @@ void monitoring_loop(Config *cfg) {
                 printf("-> Alerte détectée mais non confirmée (%d/%d)\n", consec, cfg->alertes_consecutives);
             }
         }
-
         ecrire_journal_dans_fichier();
+        i++;
+
+
 #ifdef _WIN32
         Sleep(cfg->intervalle_mesure * 1000);
 #else
@@ -550,8 +553,10 @@ int main() {
             continue;
         }
         if (choice == 1) {
+            printf("La longueur de la simulation:");
+            int looplength; scanf("%d",&looplength);
             printf("Démarrage en mode simulation.\n");
-            monitoring_loop(&cfg);
+            monitoring_loop(&cfg,looplength);
         } else if (choice == 2) {
             char line[256];
             printf("Modifier configuration (taper Entrée après chaque valeur)\n");
@@ -593,4 +598,3 @@ int main() {
 
     return 0;
 }
-
