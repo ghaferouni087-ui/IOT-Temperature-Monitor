@@ -141,7 +141,7 @@ void afficher(File *f) {
 }
 
 /*task 3-4*/
-NoeudJournal *tete_journal = NULL;
+NoeudJournal *sommet_journal = NULL;
 
 void obtenir_timestamp(char *ch) {
     time_t timer;
@@ -159,19 +159,20 @@ void copier_chaine_securisee(char *destination, const char *source, int taille_m
     }
     destination[i] = '\0';
 }
-void ajouter_mesure_journal(float temp,const char *msg) {
+void enfiler_mesure_journal(float temp,const char *msg) {
     NoeudJournal *nouveau_noeud = (NoeudJournal *)malloc(sizeof(NoeudJournal));
     obtenir_timestamp(nouveau_noeud->timestamp);
     nouveau_noeud->temperature = temp;
     copier_chaine_securisee(nouveau_noeud->message, msg, MAXMSG);
-    nouveau_noeud->suivant = tete_journal;
-    tete_journal = nouveau_noeud;
+    nouveau_noeud->suivant = sommet_journal;
+    sommet_journal = nouveau_noeud;
 }
 
 
 void ecrire_journal_dans_fichier() {
+    
     FILE *fichier = fopen(NOMFICH, "a");
-    NoeudJournal *courant = tete_journal;
+    NoeudJournal *courant = sommet_journal;
 
     while (courant != NULL) {
         fprintf(fichier, "[%s] Temp: %.1fC -%s \n", 
@@ -184,8 +185,8 @@ void ecrire_journal_dans_fichier() {
 }
 
 
-void liberer_journal() {
-    NoeudJournal *courant = tete_journal;
+void defiler_tout_journal() {
+    NoeudJournal *courant = sommet_journal;
     NoeudJournal *suivant;
 
     
@@ -194,7 +195,7 @@ void liberer_journal() {
         free(courant);
         courant = suivant;
     }
-    tete_journal = NULL;
+    sommet_journal = NULL;
     
 }
 
@@ -366,7 +367,7 @@ void freeTree(NODE* root) {
 void compter_alertes_par_type(int *n1,int *n2,int *n3, Config *cfg) {
     *n1 = *n2 = *n3 =0;
 
-    NoeudJournal *courant = tete_journal;
+    NoeudJournal *courant = sommet_journal;
     while (courant != NULL) {
         int niveau = determiner_niveau(courant->temperature, cfg);
         if (niveau == 1 ) (*n1)++;
@@ -380,7 +381,7 @@ int calculer_duree_alerte_totale(Config *cfg) {
     int duree = 0;
     int consecutif = 0;
 
-    NoeudJournal * courant = tete_journal;
+    NoeudJournal * courant = sommet_journal;
     while (courant != NULL)
     {
         int niveau = determiner_niveau(courant->temperature,cfg);
@@ -398,7 +399,7 @@ int calculer_duree_alerte_totale(Config *cfg) {
 }
 
 void generer_rapport_quotidien(Config *cfg) {
-    if (tete_journal == NULL)
+    if (sommet_journal == NULL)
     {
         printf("aucune donnee disponible");
         return;
@@ -415,7 +416,7 @@ void generer_rapport_quotidien(Config *cfg) {
     float somme = 0;
     int count = 0;
 
-    NoeudJournal *courant = tete_journal;
+    NoeudJournal *courant = sommet_journal;
     while (courant != NULL)
     {
         float t = courant->temperature;
@@ -491,11 +492,11 @@ void monitoring_loop(Config *cfg,int looplength) {
         if (niveau == 0) printf("[%s] Temp = %.2f => Normal\n", ts, temp);
         else printf("[%s] Temp = %.2f => Niv%d\n", ts, temp, niveau);
 
-        if (niveau == 0) ajouter_mesure_journal(temp,"NORMAL");
+        if (niveau == 0) enfiler_mesure_journal(temp,"NORMAL");
         else {
             char msg[64];
             snprintf(msg, sizeof(msg), "ALERTE_NIV_%d", niveau);
-            ajouter_mesure_journal(temp, msg);
+            enfiler_mesure_journal(temp, msg);
         }
 
         /* file d'alertes */
@@ -580,7 +581,7 @@ int main() {
         } else if (choice == 5) {
             printf("Au revoir.\n");
             ecrire_journal_dans_fichier();
-            liberer_journal();
+            defiler_tout_journal();
             break;
         } else {
             printf("Choix invalide.\n");
