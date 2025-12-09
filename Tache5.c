@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct Noeud {
     Alerte a;
-    struct Noeud *next;
+    struct Noeud *suivant;
 } Noeud;
 
 typedef struct {
@@ -35,14 +35,14 @@ typedef struct {
 } File;
 
 
-int count_alertes_consecutive(File *q, int niveau) {
-    if (!q->queue) return 0;
+int count_alertes_consecutive(File *f, int niveau) {
+    if (!f->queue) return 0;
     int count = 0;
-    Noeud *l = q->tete;
+    Noeud *l = f->tete;
     while (l) {
         if (l->a.niveau >= niveau) count++;
         else count=0;
-        l = l->next;
+        l = l->suivant;
     }
     return count;
 }
